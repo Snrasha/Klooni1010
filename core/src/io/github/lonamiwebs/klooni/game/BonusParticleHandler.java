@@ -1,35 +1,17 @@
-/*
-    1010! Klooni, a free customizable puzzle game for Android and Desktop
-    Copyright (C) 2017  Lonami Exo | LonamiWebs
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package io.github.lonamiwebs.klooni.game;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
-
+import com.badlogic.gdx.graphics.g2d.Batch;
 import java.util.Iterator;
-
 import io.github.lonamiwebs.klooni.Klooni;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import Label.LabelStyle;
+import com.badlogic.gdx.math.Vector2;
 
 public class BonusParticleHandler {
-
     private final Array<BonusParticle> particles;
-    private final Label.LabelStyle labelStyle;
+
+    private final LabelStyle labelStyle;
 
     public BonusParticleHandler(final Klooni game) {
         labelStyle = new Label.LabelStyle();
@@ -49,6 +31,8 @@ public class BonusParticleHandler {
             particle.run(batch);
             if (particle.done())
                 iterator.remove();
-        }
+            
+        } 
     }
 }
+
