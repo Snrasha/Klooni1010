@@ -1,83 +1,53 @@
-/*
-    1010! Klooni, a free customizable puzzle game for Android and Desktop
-    Copyright (C) 2017  Lonami Exo | LonamiWebs
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package io.github.lonamiwebs.klooni.screens;
 
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
+import Input.Keys.BACK;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import io.github.lonamiwebs.klooni.Theme;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import io.github.lonamiwebs.klooni.actors.SoftButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import GL20.GL_COLOR_BUFFER_BIT;
+import io.github.lonamiwebs.klooni.game.GameLayout;
+import Gdx.net;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.Screen;
+import Gdx.input;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-
+import Gdx.gl;
 import io.github.lonamiwebs.klooni.Klooni;
-import io.github.lonamiwebs.klooni.Theme;
-import io.github.lonamiwebs.klooni.actors.MoneyBuyBand;
-import io.github.lonamiwebs.klooni.actors.SoftButton;
+import Gdx.graphics;
 import io.github.lonamiwebs.klooni.actors.ThemeCard;
-import io.github.lonamiwebs.klooni.game.GameLayout;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import io.github.lonamiwebs.klooni.actors.MoneyBuyBand;
 
-// Screen where the user can customize the look and feel of the game
 class CustomizeScreen implements Screen {
-
-    //region Members
-
     private Klooni game;
+
     private Stage stage;
 
     private final Screen lastScreen;
 
-    private float themeDragStartX, themeDragStartY;
+    private float themeDragStartX;
 
-    //endregion
+    private float themeDragStartY;
 
-    //region Static members
+    private static final float MIN_DELTA = 1 / 30.0F;
 
-    // As the examples show on the LibGdx wiki
-    private static final float MIN_DELTA = 1/30f;
-    private static final float DRAG_LIMIT_SQ = 20*20;
-
-    //endregion
-
-    //region Constructor
+    private static final float DRAG_LIMIT_SQ = 20 * 20;
 
     CustomizeScreen(Klooni game, final Screen lastScreen) {
         final GameLayout layout = new GameLayout();
-
         this.game = game;
         this.lastScreen = lastScreen;
         stage = new Stage();
-
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
-
         HorizontalGroup optionsGroup = new HorizontalGroup();
         optionsGroup.space(12);
-
-        // Back to the previous screen
         final SoftButton backButton = new SoftButton(1, "back_texture");
         backButton.addListener(new ChangeListener() {
             @Override
@@ -86,62 +56,42 @@ class CustomizeScreen implements Screen {
             }
         });
         optionsGroup.addActor(backButton);
-
-        // Turn sound on/off
-        final SoftButton soundButton = new SoftButton(
-                0, Klooni.soundsEnabled() ? "sound_on_texture" : "sound_off_texture");
-
+        final SoftButton soundButton = new SoftButton(0, (Klooni.soundsEnabled() ? "sound_on_texture" : "sound_off_texture"));
         soundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 final boolean enabled = Klooni.toggleSound();
-                soundButton.image = CustomizeScreen.this.game.skin.getDrawable(
-                        enabled ? "sound_on_texture" : "sound_off_texture");
+                soundButton.image = CustomizeScreen.this.game.skin.getDrawable((enabled ? "sound_on_texture" : "sound_off_texture"));
             }
         });
         optionsGroup.addActor(soundButton);
-
-        // Snap to grid on/off
-        final SoftButton snapButton = new SoftButton(
-                2, Klooni.shouldSnapToGrid() ? "snap_on_texture" : "snap_off_texture");
-
+        final SoftButton snapButton = new SoftButton(2, (Klooni.shouldSnapToGrid() ? "snap_on_texture" : "snap_off_texture"));
         snapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 final boolean shouldSnap = Klooni.toggleSnapToGrid();
-                snapButton.image = CustomizeScreen.this.game.skin.getDrawable(
-                        shouldSnap ? "snap_on_texture" : "snap_off_texture");
+                snapButton.image = CustomizeScreen.this.game.skin.getDrawable((shouldSnap ? "snap_on_texture" : "snap_off_texture"));
             }
         });
         optionsGroup.addActor(snapButton);
-
-        // Issues
         final SoftButton issuesButton = new SoftButton(3, "issues_texture");
         issuesButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.net.openURI("https://github.com/LonamiWebs/Klooni1010/issues");
+                net.openURI("https://github.com/LonamiWebs/Klooni1010/issues");
             }
         });
         optionsGroup.addActor(issuesButton);
-
-        // Website
         final SoftButton webButton = new SoftButton(2, "web_texture");
         webButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.net.openURI("https://lonamiwebs.github.io");
+                net.openURI("https://lonamiwebs.github.io");
             }
         });
         optionsGroup.addActor(webButton);
-
-        // Use the same height as the buttons (for instance, the back button)
-        table.add(new ScrollPane(optionsGroup))
-                .pad(20, 4, 12, 4).height(backButton.getHeight());
-
-        // Load all the available themes
+        table.add(new ScrollPane(optionsGroup)).pad(20, 4, 12, 4).height(backButton.getHeight());
         final MoneyBuyBand buyBand = new MoneyBuyBand(game);
-
         table.row();
         final VerticalGroup themesGroup = new VerticalGroup();
         for (Theme theme : Theme.getThemes()) {
@@ -154,24 +104,19 @@ class CustomizeScreen implements Screen {
                     return true;
                 }
 
-                // We could actually rely on touchDragged not being called,
-                // but perhaps it would be hard for some people not to move
-                // their fingers even the slightest bit, so we use a custom
-                // drag limit
-
                 @Override
                 public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                     x -= themeDragStartX;
                     y -= themeDragStartY;
-                    float distSq = x * x + y * y;
-                    if (distSq < DRAG_LIMIT_SQ) {
+                    float distSq = (x * x) + (y * y);
+                    if (distSq < (CustomizeScreen.DRAG_LIMIT_SQ)) {
                         if (Klooni.isThemeBought(card.theme))
                             card.use();
                         else
                             buyBand.askBuy(card);
-
+                        
                         for (Actor a : themesGroup.getChildren()) {
-                            ThemeCard c = (ThemeCard)a;
+                            ThemeCard c = ((ThemeCard) (a));
                             c.usedThemeUpdated();
                         }
                     }
@@ -179,53 +124,37 @@ class CustomizeScreen implements Screen {
             });
             themesGroup.addActor(card);
         }
-
         final ScrollPane themesScroll = new ScrollPane(themesGroup);
         table.add(themesScroll).expand().fill();
-
-        // Show the current money row
         table.row();
         table.add(buyBand).expandX().fillX();
-
-        // Scroll to the currently selected theme
         table.layout();
         for (Actor a : themesGroup.getChildren()) {
-            ThemeCard c = (ThemeCard)a;
+            ThemeCard c = ((ThemeCard) (a));
             if (c.isUsed()) {
-                themesScroll.scrollTo(
-                        c.getX(), c.getY() + c.getHeight(),
-                        c.getWidth(), c.getHeight());
+                themesScroll.scrollTo(c.getX(), ((c.getY()) + (c.getHeight())), c.getWidth(), c.getHeight());
                 break;
             }
             c.usedThemeUpdated();
         }
     }
 
-    //endregion
-
-    //region Private methods
-
     private void goBack() {
-        CustomizeScreen.this.game.transitionTo(lastScreen);
+        this.game.transitionTo(lastScreen);
     }
-
-    //endregion
-
-    //region Public methods
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float delta) {
         Klooni.theme.glClearBackground();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), MIN_DELTA));
+        gl.glClear(GL_COLOR_BUFFER_BIT);
+        stage.act(Math.min(graphics.getDeltaTime(), CustomizeScreen.MIN_DELTA));
         stage.draw();
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+        if (input.isKeyJustPressed(BACK)) {
             goBack();
         }
     }
@@ -240,18 +169,16 @@ class CustomizeScreen implements Screen {
         stage.dispose();
     }
 
-    //endregion
-
-    //region Empty methods
+    @Override
+    public void pause() {
+    }
 
     @Override
-    public void pause() { }
+    public void resume() {
+    }
 
     @Override
-    public void resume() { }
-
-    @Override
-    public void hide() { }
-
-    //endregion
+    public void hide() {
+    }
 }
+
