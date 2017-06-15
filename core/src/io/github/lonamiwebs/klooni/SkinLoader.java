@@ -1,82 +1,52 @@
-/*
-    1010! Klooni, a free customizable puzzle game for Android and Desktop
-    Copyright (C) 2017  Lonami Exo | LonamiWebs
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package io.github.lonamiwebs.klooni;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import codesmells.annotations.LM;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.graphics.Texture;
+import Gdx.app;
+import Gdx.files;
+import Gdx.graphics;
 
 public class SkinLoader {
-    private static float[] multipliers = {0.75f, 1.0f, 1.25f, 1.5f, 2.0f, 4.0f};
-    private static String[] ids = {
-            "play", "play_saved", "star", "stopwatch", "palette", "home", "replay",
-            "share", "sound_on", "sound_off", "snap_on", "snap_off", "issues", "credits",
-            "web", "back", "ok", "cancel"
-    };
+    private static float[] multipliers = new float[]{ 0.75F , 1.0F , 1.25F , 1.5F , 2.0F , 4.0F };
+
+    private static String[] ids = new String[]{ "play" , "play_saved" , "star" , "stopwatch" , "palette" , "home" , "replay" , "share" , "sound_on" , "sound_off" , "snap_on" , "snap_off" , "issues" , "credits" , "web" , "back" , "ok" , "cancel" };
 
     private static float bestMultiplier;
 
     static {
-        // Use the height to determine the best match
-        // We cannot use a size which is over the device height,
-        // so use the closest smaller one
         int i;
-        float desired = (float)Gdx.graphics.getHeight() / (float)Klooni.GAME_HEIGHT;
-        for (i = multipliers.length - 1; i > 0; --i) {
-            if (multipliers[i] < desired)
+        float desired = ((float) (graphics.getHeight())) / ((float) (Klooni.GAME_HEIGHT));
+        for (i = (SkinLoader.multipliers.length) - 1; i > 0; --i) {
+            if ((SkinLoader.multipliers[i]) < desired)
                 break;
+            
         }
-
-        // Now that we have the right multiplier, load the skin
-        Gdx.app.log("SkinLoader", "Using assets multiplier x" + multipliers[i]);
-        bestMultiplier = multipliers[i];
+        app.log("SkinLoader", ("Using assets multiplier x" + (SkinLoader.multipliers[i])));
+        SkinLoader.bestMultiplier = SkinLoader.multipliers[i];
     }
 
+    @LM
     static Skin loadSkin() {
-        String folder = "ui/x" + bestMultiplier + "/";
-
-        // Base skin
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-
-        // Nine patches
-        final int border = (int)(28 * bestMultiplier);
-        skin.add("button_up", new NinePatch(new Texture(
-                Gdx.files.internal(folder + "button_up.png")), border, border, border, border));
-
-        skin.add("button_down", new NinePatch(new Texture(
-                Gdx.files.internal(folder + "button_down.png")), border, border, border, border));
-
-        for (String id : ids) {
-            skin.add(id + "_texture", new Texture(Gdx.files.internal(folder + id + ".png")));
+        String folder = ("ui/x" + (SkinLoader.bestMultiplier)) + "/";
+        Skin skin = new Skin(files.internal("skin/uiskin.json"));
+        final int border = ((int) (28 * (SkinLoader.bestMultiplier)));
+        skin.add("button_up", new NinePatch(new Texture(files.internal((folder + "button_up.png"))), border, border, border, border));
+        skin.add("button_down", new NinePatch(new Texture(files.internal((folder + "button_down.png"))), border, border, border, border));
+        for (String id : SkinLoader.ids) {
+            skin.add((id + "_texture"), new Texture(files.internal(((folder + id) + ".png"))));
         }
-
-        folder = "font/x" + bestMultiplier + "/";
-        skin.add("font", new BitmapFont(Gdx.files.internal(folder + "geosans-light64.fnt")));
-        skin.add("font_small", new BitmapFont(Gdx.files.internal(folder + "geosans-light32.fnt")));
-        skin.add("font_bonus", new BitmapFont(Gdx.files.internal(folder + "the-next-font.fnt")));
-
+        folder = ("font/x" + (SkinLoader.bestMultiplier)) + "/";
+        skin.add("font", new com.badlogic.gdx.graphics.g2d.BitmapFont(files.internal((folder + "geosans-light64.fnt"))));
+        skin.add("font_small", new com.badlogic.gdx.graphics.g2d.BitmapFont(files.internal((folder + "geosans-light32.fnt"))));
+        skin.add("font_bonus", new com.badlogic.gdx.graphics.g2d.BitmapFont(files.internal((folder + "the-next-font.fnt"))));
         return skin;
     }
 
     public static Texture loadPng(String name) {
-        final String filename = "ui/x" + bestMultiplier + "/" + name;
-        return new Texture(Gdx.files.internal(filename));
+        final String filename = (("ui/x" + (SkinLoader.bestMultiplier)) + "/") + name;
+        return new Texture(files.internal(filename));
     }
 }
+
